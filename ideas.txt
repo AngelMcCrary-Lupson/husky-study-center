@@ -1,0 +1,9 @@
+App where a Youtube live feed or playlist of videos plays and students can join a study room
+based on the channel/subject
+  - Has lofi hip hop music player ability or some other study music
+  - Channel corresponds to course name
+  - Like on campus study centers but virtual
+  - Different tables
+  - Jukebox where you can select music
+  - Needs to work well in smaller/split view port if combined with other tabs
+  

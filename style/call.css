@@ -1,0 +1,58 @@
+#me {
+  display: block;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: 150px 1fr;
+  width: 45vw;
+  margin: 0vw 5vw 3vw 2vw;
+  height: 30vw;
+  border: 5px solid #85754d;
+  margin-top: 10vw;
+  position: absolute;
+}
+
+body {
+  background-color: #4b2e83;
+}
+
+#remote-container {
+  display: flex;
+  /* flex-flow: nowrap; */
+  height: 9vw;
+  position: absolute;
+  left: 7%;
+  top: 6vw;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  /* max-width: 90%; */
+}
+
+#remote-container div {
+  height: 9vw;
+  width: 12vw;
+}
+
+#controls {
+  width: 30%;
+  margin-left: 25%;
+  position: absolute;
+  z-index: 1;
+  margin-top: 24vw;
+}
+
+#bg_music {
+  float: right;
+  margin-top: 10vw;
+}
+
+.visible {
+  display: none;
+}
+
+#channel_name {
+  color: #e8e3d3;
+  font-size: 36pt;
+  font-family: "Encode Sans Compressed", sans-serif;
+  align-self: center;
+  white-space: nowrap;
+}
