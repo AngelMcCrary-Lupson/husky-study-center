@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Agora Group Calling</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.1.2/tailwind.min.css'>
+        <link rel="stylesheet" href="../style/main.css">
+        <script src="https://cdn.agora.io/sdk/release/AgoraRTCSDK-3.1.0.js"></script>
+      </head>
+
+    <body>
+        <h1 class="flex justify-center">Husky Study Center</h1>
+        <p class="flex justify-center">Need some extra help or looking to study together with people?
+           Join a call with fellow students and TAs to help you with your studies.</p>
+        <div class="h-screen flex justify-center items-center">
+            <div id="login" class="w-full max-w-xs flex flex-col py-5 px-8 rounded-lg shadow-lg">
+                <label class="font-bold py-2" for="">Username</label>
+                <input id="username" class="text-gray-700 shadow border rounded border-gray-300 focus:outline-none focus:shadow-outline py-1 px-3 mb-3" type="text" placeholder="John Doe" maxlength="10" required>
+                <label class="font-bold py-2" for="">Channel Name</label>
+                <input id = "channelName" class="text-gray-700 shadow border rounded border-gray-300 mb-3 py-1 px-3 focus:outline-none focus:shadow-outline" type="text" placeholder="INFO 201" maxlength="9" required>
+                <div class="flex items-center my-4 block m-auto ">
+                  <button id="submit_btn" class="text-white font-bold rounded py-2 px-10" onclick="saveToLocalStorage()">
+                    Join Call
+                  </button>
+
+                  <script>
+                    function saveToLocalStorage() {
+                      var username = document.getElementById("username").value;
+                      var channelName = document.getElementById("channelName").value;
+
+                      localStorage.setItem("username", username);
+                      localStorage.setItem("channelName", channelName);
+
+                      window.location.href = 'callpage.html';
+                    }
+                  </script>
+                </div>
+              </div>
+        </div>
+
+        <footer class="flex justify-center">
+          <p>Made by
+             <a href="https://angelmccrary-lupson.github.io/home/">Angel McCrary-Lupson</a>
+             using <a href="https://docs.agora.io/en">Agora Web SDK</a></p>
+        </footer>
+
+    </body>
+</html>

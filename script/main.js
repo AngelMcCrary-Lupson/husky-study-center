@@ -7,21 +7,19 @@ let handleFail = function(err){
     console.log("Error : ", err);
 };
 
-// Queries the container in which the remote feeds belong
-let remoteContainer = document.getElementById("remote-container");
-var count = 0; // number of remote containers
+var remoteContainer = document.getElementById("remote-container");
+var count = 0;
 
-
-// Reads value from a variable named `channelName` in our local storage
 var channelName = localStorage.getItem("channelName");
+var username = localStorage.getItem("username");
+
+var call_duration = document.getElementById("call_duration");
 
 document.getElementById("channel_name").innerText = channelName;
 
 document.getElementById('disconnect_call').onclick = () =>  {
     disconnectCall();
 }
-
-
 
 /**
  * @name disconnectCall
@@ -31,36 +29,9 @@ document.getElementById('disconnect_call').onclick = () =>  {
 function disconnectCall(){
     client.leave();
     if (client.leave) {
-        window.location.href = '../index.html'
+        window.location.href = 'index.html';
     }
 }
-
-// document.getElementById('bg_song').onclick = () => {
-//     toggleMusic();
-// }
-
-// var isPlaying = false; // default state of song
-
-// function toggleMusic() {
-//     if (isPlaying) {
-//         isPlaying = false;
-//         globalstream.playEffect({
-//             soundId : 1,
-//             filePath : "https://web-demos-static.agora.io/agora/smlt.flac"
-//         }, function (err) {
-//             console.log(err);
-//         });
-//     } else {
-//         isPlaying = true;
-//         globalstream.pauseAllEffects(function(err){
-//             if (err){
-//                 console.error("Failed to pause effects, reason: ", err);
-//             }else{
-//                 console.log("Effects are paused successfully");
-//             }
-//         });
-//     }
-// }
 
 var isMuted = false; //Default state of mic
 
@@ -83,17 +54,59 @@ function toggleMic() {
     }
 }
 
+var isShare = false; //Default state of screen share
+
+document.getElementById('share_btn').onclick = () =>  {
+    toggleShare();
+}
+
+/**
+ * @name toggleShare
+ * @param null
+ * @description function to switch between enabling and disabling screen share
+ */
+function toggleShare() {
+    if (isShare) {
+        isShare = false;
+        localStream2 = AgoraRTC.createStream({audio: true, video: true, screen: false});
+        localStream2.init(function(){
+          var newVideoTrack = localStream2.getVideoTrack();
+          globalstream.replaceTrack(newVideoTrack);
+        });
+        toggleCameraBtn();
+    } else {
+      isShare = true;
+      localStream2 = AgoraRTC.createStream({audio: true, video: false, screen: true});
+      localStream2.init(function(){
+        var newVideoTrack = localStream2.getVideoTrack();
+        globalstream.replaceTrack(newVideoTrack);
+      });
+       toggleCameraBtn();
+    }
+}
+
 var isCameraOn = true; // Default state of camera
 
 document.getElementById('disable_camera').onclick = () =>  {
     toggleCamera();
 }
 
-document.getElementById('bg_song_btn').onclick = () => {
-  toggleMusic();
-}
+var cameraBtnOn = true;
 
-var isMusicOn = true;
+/**
+ * @name toggleCameraBtn
+ * @param null
+ * @description disables changing the camera's state
+ */
+function toggleCameraBtn() {
+  if (cameraBtnOn) {
+    document.getElementById("disable_camera").disabled = true;
+    cameraBtnOn = false;
+  } else {
+    document.getElementById("disable_camera").disabled = false;
+    cameraBtnOn = true;
+  }
+}
 
 /**
  * @name toggleCamera
@@ -110,6 +123,17 @@ function toggleCamera() {
     }
 }
 
+var isMusicOn = true; // Default state of music view port
+
+document.getElementById('bg_song_btn').onclick = () => {
+  toggleMusic();
+}
+
+/**
+ * @name toggleMusic
+ * @param null
+ * @description function to switch between showing the background music frame view
+ */
 function toggleMusic() {
   let frame = document.getElementById("bg_music");
   if (isMusicOn) {
@@ -128,11 +152,75 @@ function toggleMusic() {
  */
 function addVideoStream(streamId){
     count = count + 1;
-    let streamDiv=document.createElement("div"); // Create a new div for every stream
-    streamDiv.id=streamId;                       // Assigning id to div
-    streamDiv.style.transform="rotateY(180deg)"; // Takes care of lateral inversion (mirror image)
-    streamDiv.style.marginBottom = "3vw";        // Creates some space between the remote containers
-    remoteContainer.appendChild(streamDiv);      // Add new div to container
+    let displayName = document.createElement("button");
+    displayName.innerText = username;
+    displayName.classList = "name";
+    displayName.id = streamId + "_btn";
+    displayName.title = "Toggle Pinned Video";
+    let streamDiv = document.createElement("div");
+    streamDiv.id = streamId;
+    streamDiv.classList = "flex";
+    streamDiv.style.marginBottom = "3vw";
+    streamDiv.appendChild(displayName);
+    streamDiv.onclick = function() { pinVideo(streamId); }; // Allows the stream to be pinnable
+    remoteContainer.appendChild(streamDiv);
+}
+
+var isPinned = false; // Default state of pinned stream view port
+
+/**
+ * @name pinVideo
+ * @param streamId
+ * @description Toggles the pinned stream view port and which remote stream is in view
+ */
+function pinVideo(streamId) {
+    let pinStream = document.getElementById("player_" + streamId);
+    let pinDiv = document.getElementById("pinned");
+    let nameDiv = document.getElementById(streamId);
+    let music_btn = document.getElementById("bg_song_btn");
+    let pin_btns = document.getElementsByClassName("name");
+    let curr_pin_btn = document.getElementById(streamId + "_btn");
+    // Toggles the pinned stream and its viewport
+    if (isPinned) {
+      toggleMusic();
+      isPinned = false;
+      pinDiv.classList = "visible";
+      remoteContainer.appendChild(nameDiv);
+      remoteContainer.appendChild(pinStream);
+      music_btn.disabled = false;
+      enablePins(pin_btns);
+    } else {
+      toggleMusic();
+      music_btn.disabled = true;
+      disablePins(pin_btns);
+      curr_pin_btn.disabled = false;
+      isPinned = true;
+      pinDiv.classList = "";
+      pinStream.insertBefore(nameDiv, pinStream.firstChild);
+      pinDiv.appendChild(pinStream);
+    }
+}
+
+/**
+ * @name disablePins
+ * @param null
+ * @description disables changing the pinned stream
+ */
+function disablePins(pins) {
+    for (let i = 0; i < pins.length; i++) {
+      pins[i].disabled = true;
+    }
+}
+
+/**
+ * @name enablePins
+ * @param null
+ * @description enables changing the pinned stream
+ */
+function enablePins(pins) {
+    for (let i = 0; i < pins.length; i++) {
+      pins[i].disabled = false;
+    }
 }
 
 /**
@@ -141,14 +229,17 @@ function addVideoStream(streamId){
  * @description Helper function to remove the video stream from "remote-container"
  */
 function removeVideoStream (evt) {
-    let stream = evt.stream;
-    stream.stop();
-    let remDiv = document.getElementById('remote-container');
-    remDiv.parentNode.removeChild(remDiv); //document.getElementById(stream.streamId)
-    console.log("Remote stream removed ");
+  let stream = evt.stream;
+  count = count - 1;
+  let id = stream.streamId;
+  let streamDiv = document.getElementById("player_" + id);
+  let extraDiv = document.getElementById(id);
+  stream.stop();
+  let remDiv = document.getElementById('remote-container');
+  remDiv.removeChild(extraDiv);
+  remDiv.removeChild(streamDiv);
 }
 
-// Start code
 //Creating client
 let client = AgoraRTC.createClient({
     mode : 'live',
@@ -167,7 +258,6 @@ client.init("dc96e5c14025414ea38980c9b1b1fbe4", function(){
     console.log("Initialized successfully!");
 });
 
-
 //Joining the client
 client.join(null, channelName, null, function(uid){
 
@@ -180,38 +270,13 @@ client.join(null, channelName, null, function(uid){
 
     globalstream = localstream;
 
-    // Printing logs in the console
-
     // Session logs
     setInterval(() => {
         client.getSessionStats((stats) => {
-          console.log(`Current Session Duration: ${stats.Duration}`);
-          console.log(`Current Session UserCount: ${stats.UserCount}`);
-          console.log(`Current Session SendBytes: ${stats.SendBytes}`);
-          console.log(`Current Session RecvBytes: ${stats.RecvBytes}`);
-          console.log(`Current Session SendBitrate: ${stats.SendBitrate}`);
-          console.log(`Current Session RecvBitrate: ${stats.RecvBitrate}`);
+          let time = new Date(stats.Duration * 1000).toISOString().substr(11, 8);
+          call_duration.innerText = "Current In-Call Session Duration: " + time;
         });
       }, 1000);
-
-      // Network quality stats
-      client.on("network-quality", function(stats) {
-        console.log("downlinkNetworkQuality", stats.downlinkNetworkQuality);
-        console.log("uplinkNetworkQuality", stats.uplinkNetworkQuality);
-    });
-
-    // Video stats from remote video
-    setInterval(() => {
-        client.getRemoteVideoStats((remoteVideoStatsMap) => {
-          for(var uid in remoteVideoStatsMap){
-            console.log(`Video End2EndDelay from ${uid}: ${remoteVideoStatsMap[uid].End2EndDelay}`);
-            console.log(`Video MuteState from ${uid}: ${remoteVideoStatsMap[uid].MuteState}`);
-            console.log(`Video PacketLossRate from ${uid}: ${remoteVideoStatsMap[uid].PacketLossRate}`);
-            console.log(`Video TransportDelay from ${uid}: ${remoteVideoStatsMap[uid].TransportDelay}`);
-          }
-        });
-      }, 1000);
-
 
     //Publishing the stream.
     localstream.init(function(){
@@ -227,9 +292,9 @@ client.join(null, channelName, null, function(uid){
             addVideoStream(stream.getId());
             stream.play('remote-container');
             // Mute the remote user
-            stream.setAudioVolume(0);
+            // stream.setAudioVolume(0);
         });
-        client.on('stream-removed', removeVideoStream);
+        client.on('peer-leave', removeVideoStream);
     },handleFail);
 
 },handleFail);

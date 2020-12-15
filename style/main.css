@@ -1,6 +1,30 @@
-body{
-    background-image: url("../assets/bg.gif");
-    background-repeat: no-repeat, no-repeat;
-    background-size: cover;
+body {
+    background-color: #4b2e83;
 }
 
+h1 {
+  font-size: 5em;
+  color: white;
+}
+
+p {
+  font-size: 1em;
+  color: white;
+  margin-top: 2%;
+}
+
+#login {
+  background-color: #85754d;
+}
+
+#submit_btn {
+  background-color: #4b2e83;
+}
+
+label {
+  color: white;
+}
+
+.h-screen {
+    height: 50vh;
+}

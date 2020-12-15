@@ -10,21 +10,37 @@
   position: absolute;
 }
 
+#call_duration {
+  color: white;
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.name {
+  color: white;
+  padding-left: 10%;
+  padding-right: 10%;
+  align-self: flex-end;
+  z-index: 1;
+}
+
 body {
   background-color: #4b2e83;
 }
 
+button img {
+  height: 50%;
+}
+
 #remote-container {
   display: flex;
-  /* flex-flow: nowrap; */
   height: 9vw;
   position: absolute;
   left: 7%;
-  top: 6vw;
+  top: 7vw;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  /* max-width: 90%; */
 }
 
 #remote-container div {
@@ -33,11 +49,13 @@ body {
 }
 
 #controls {
-  width: 30%;
-  margin-left: 25%;
+  width: 20%;
+  margin-left: 40%;
   position: absolute;
   z-index: 1;
   margin-top: 24vw;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 #bg_music {
@@ -49,10 +67,19 @@ body {
   display: none;
 }
 
+#pinned {
+  width: 600px;
+  height: 440px;
+  margin-right: 5vw;
+  float: right;
+  margin-top: 10vw;
+  border: 5px solid #85754d;
+}
+
 #channel_name {
   color: #e8e3d3;
   font-size: 36pt;
   font-family: "Encode Sans Compressed", sans-serif;
-  align-self: center;
+  text-align: center;
   white-space: nowrap;
 }
